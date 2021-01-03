@@ -115,9 +115,7 @@ export default class ServerDisplayer extends Vue {
       const constraints = {
         audio: {
           echoCancellationType: 'system',
-          echoCancellation: true,
-          autoGainControl: true,
-          noiseSuppression: true
+          echoCancellation: true
         }
       }
 
@@ -129,6 +127,8 @@ export default class ServerDisplayer extends Vue {
 
       src.connect(gainNode)
       gainNode.connect(dest)
+
+      gainNode.gain.value = 1
 
       this.$store.state.mic.volumeNode = gainNode
       this.$store.state.mic.destStream = dest
