@@ -112,7 +112,16 @@ export default class ServerDisplayer extends Vue {
    */
   async setupMyStream () {
     if (!this.$store.state.mic.volumeNode) {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const constraints = {
+        audio: {
+          echoCancellationType: 'system',
+          echoCancellation: true,
+          autoGainControl: false,
+          noiseSuppression: true
+        }
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints)
       const ctx = new AudioContext()
       const src = ctx.createMediaStreamSource(stream)
       const gainNode = ctx.createGain()
@@ -120,8 +129,6 @@ export default class ServerDisplayer extends Vue {
 
       src.connect(gainNode)
       gainNode.connect(dest)
-
-      gainNode.gain.value = 1
 
       this.$store.state.mic.volumeNode = gainNode
       this.$store.state.mic.destStream = dest
