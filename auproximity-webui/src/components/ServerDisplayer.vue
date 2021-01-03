@@ -116,7 +116,7 @@ export default class ServerDisplayer extends Vue {
         audio: {
           echoCancellationType: 'system',
           echoCancellation: true,
-          autoGainControl: false,
+          autoGainControl: true,
           noiseSuppression: true
         }
       }
