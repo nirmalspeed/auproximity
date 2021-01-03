@@ -113,13 +113,12 @@ export default class ServerDisplayer extends Vue {
   async setupMyStream () {
     if (!this.$store.state.mic.volumeNode) {
       const constraints = {
-        audio: {
-          echoCancellationType: 'system',
-          echoCancellation: true
-        }
+        echoCancellationType: 'system',
+        echoCancellation: true,
+        noiseSuppression: true
       }
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      await stream.getAudioTracks()[0].applyConstraints(constraints)
       const ctx = new AudioContext()
       const src = ctx.createMediaStreamSource(stream)
       const gainNode = ctx.createGain()
@@ -145,7 +144,16 @@ export default class ServerDisplayer extends Vue {
         if (!this.remotectx) {
           this.remotectx = new AudioContext()
         }
-        const source = this.remotectx.createMediaStreamSource(new MediaStream([remoteStream.getAudioTracks()[0]]))
+
+        const constraints = {
+          echoCancellationType: 'system',
+          echoCancellation: true,
+          noiseSuppression: true
+        }
+        const sourceAudioTrack = remoteStream.getAudioTracks()[0]
+        sourceAudioTrack.applyConstraints(constraints)
+
+        const source = this.remotectx.createMediaStreamSource(new MediaStream([sourceAudioTrack]))
         const gainNode = this.remotectx.createGain()
         const volumeNode = this.remotectx.createGain()
         const pannerNode = this.remotectx.createPanner()
